@@ -6,22 +6,23 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.google.gson.Gson;
 
 public class routeShortestRouteCalculator {
 	
-	public float menorDistanciaPonto(ArrayList<String[]> coordenadas, String[] coletas) throws IOException, InterruptedException {
+	public float menorDistanciaPonto(String[] coordenadas, String coletas) throws IOException, InterruptedException {
 			//ArrayList<String[]> rotasColeta = new ArrayList<String[]>();
 			//System.out.println(coletas[0]+" , "+coletas[1]);
 			float minDistance = 1000000;
 			Gson gson = new Gson();
 			var client = HttpClient.newHttpClient();
 
-			for (String[] coord : coordenadas) {
+			for (String coord : coordenadas) {
 				//System.out.println(coord[0]+" , "+coord[1]);
 				HttpRequest request = HttpRequest.newBuilder()
-				          .uri(URI.create("http://0.0.0.0:5000/route/v1/driving/"+coord[0]+","+coord[1]+";"+coletas[0]+","+coletas[1]+"?geometries=geojson"))
+				          .uri(URI.create("http://0.0.0.0:5000/route/v1/driving/"+coord+";"+coletas+"?geometries=geojson"))
 				          .header("Accept", "application/json")
 				          .build();
 				HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -35,17 +36,17 @@ public class routeShortestRouteCalculator {
 		return minDistance;
 	}
 	
-	public float menorDuracaoPonto(ArrayList<String[]> coordenadas, String[] coletas) throws IOException, InterruptedException {
+	public float menorDuracaoPonto(String[] coordenadas, String coletas) throws IOException, InterruptedException {
 		//ArrayList<String[]> rotasColeta = new ArrayList<String[]>();
 		//System.out.println(coletas[0]+" , "+coletas[1]);
 		float minDuration = 1000000;
 		Gson gson = new Gson();
 		var client = HttpClient.newHttpClient();
 
-		for (String[] coord : coordenadas) {
+		for (String coord : coordenadas) {
 			//System.out.println(coord[0]+" , "+coord[1]);
 			HttpRequest request = HttpRequest.newBuilder()
-			          .uri(URI.create("http://0.0.0.0:5000/route/v1/driving/"+coord[0]+","+coord[1]+";"+coletas[0]+","+coletas[1]+"?geometries=geojson"))
+			          .uri(URI.create("http://0.0.0.0:5000/route/v1/driving/"+coord+";"+coletas+"?geometries=geojson"))
 			          .header("Accept", "application/json")
 			          .build();
 			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -89,7 +90,7 @@ public class routeShortestRouteCalculator {
 				HttpResponse<String> response2 = client.send(request2, HttpResponse.BodyHandlers.ofString());
 				Route rotaAux2 = gson.fromJson(response1.body(), Route.class);
 				
-				float somaDistanciais = Float.parseFloat(rotaAux1.getRoutesDuration()) + Float.parseFloat(rotaAux2.getRoutesDuration());
+				float somaDistanciais = Float.parseFloat(rotaAux1.getRoutesDistance()) + Float.parseFloat(rotaAux2.getRoutesDistance());
 				String[] rotaD = {entrega[i], String.valueOf(somaDistanciais)};
 				//System.out.println(rotaD[0]+" -  "+rotaD[1]);
 				
@@ -152,4 +153,39 @@ public class routeShortestRouteCalculator {
 		}
 		return totalDuration;
 	}
+	
+	public float desvioColeta(String[] entrega, String coleta) throws IOException, InterruptedException {
+		Gson gson = new Gson();
+		var client = HttpClient.newHttpClient();
+		Float[] desvios = new Float[entrega.length - 1];
+		//for (String e : entrega) {System.out.println(e);}
+		//System.out.println(coleta);
+		
+		for (int i = 0; i < entrega.length - 1; i++) {
+			//System.out.println(ent);
+			
+			HttpRequest request1 = HttpRequest.newBuilder()
+					.uri(URI.create("http://0.0.0.0:5000/route/v1/driving/"+entrega[i]+";"+coleta+"?geometries=geojson"))
+					.header("Accept", "application/json")
+					.build();
+			HttpResponse<String> response1 = client.send(request1, HttpResponse.BodyHandlers.ofString());
+			Route rotaAux1 = gson.fromJson(response1.body(), Route.class);
+			
+			HttpRequest request2 = HttpRequest.newBuilder()
+					.uri(URI.create("http://0.0.0.0:5000/route/v1/driving/"+coleta+";"+entrega[i+1]+"?geometries=geojson"))
+					.header("Accept", "application/json")
+					.build();
+			HttpResponse<String> response2 = client.send(request2, HttpResponse.BodyHandlers.ofString());
+			Route rotaAux2 = gson.fromJson(response1.body(), Route.class);
+			
+			float somaDistanciais = Float.parseFloat(rotaAux1.getRoutesDistance()) + Float.parseFloat(rotaAux2.getRoutesDistance());
+			desvios[i] = somaDistanciais;
+		}
+		Arrays.sort(desvios);
+		//for (Float d : desvios) {System.out.println(d);}
+		//System.out.println("\n");
+		return desvios[desvios.length -1];
+	}
+	
+	
 }
