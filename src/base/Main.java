@@ -29,7 +29,7 @@ public class Main {
 		entregas.add(entrega3);*/
 		
 		routeGenerator generator = new routeGenerator();
-		entregas = generator.generateRoutes(100,2);
+		entregas = generator.generateRoutes(5,2);
 		
 		/*for (String[] entrega: entregas) {
 			System.out.println("\nRota");
@@ -139,7 +139,13 @@ public class Main {
 			}
 		}
 		
-		
+		var resultadoNormalizado = utilityCalculator.normalizeUtility(result,coletas.size(),entregas.size());
+		System.out.println("\nUtilidades Normalizadas");
+		for (int i=0; i < coletas.size(); i++) {
+			for (int j=0; j < entregas.size(); j++) {
+				System.out.println("Coleta: "+i+" Rota: "+j+": "+resultadoNormalizado[i][j]);
+			}
+		}
 		 
 	}
 }

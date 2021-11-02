@@ -65,10 +65,12 @@ public class routeGenerator {
 				rotaCalculada[k] = coordenadas.get(sortedIndexList[k - 1])[0]+","+coordenadas.get(sortedIndexList[k - 1])[1];
 			}
 			rotaCalculada[qtdPontosEntrega + 1] = randomPoints[i];
-			
+			/*
+			String rotaString = "";
 			for (String coord : rotaCalculada) {
-				//System.out.println(coord);
+				rotaString+=coord +  "|"; 
 			}
+			System.out.println(rotaString);*/
 			
 			rotas.add(rotaCalculada);
 		}
