@@ -184,7 +184,7 @@ public class routeShortestRouteCalculator {
 		Arrays.sort(desvios);
 		//for (Float d : desvios) {System.out.println(d);}
 		//System.out.println("\n");
-		return desvios[desvios.length -1];
+		return (Float) desvios[desvios.length -1];
 	}
 	
 	

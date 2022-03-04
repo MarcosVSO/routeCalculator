@@ -29,7 +29,7 @@ public class Main {
 		entregas.add(entrega3);*/
 		
 		routeGenerator generator = new routeGenerator();
-		entregas = generator.generateRoutes(5,2);
+		entregas = generator.generateRoutes(4,1);
 		
 		/*for (String[] entrega: entregas) {
 			System.out.println("\nRota");
